@@ -1,0 +1,226 @@
+body{
+  text-align: center;
+}
+/* navigation section starts here */
+.navigation-section{
+  background-color: #3590c4;
+}
+.navbar-brand{
+  letter-spacing: 7px;
+  font-family: 'Roboto Slab', serif;
+  position: relative;
+  left: 80px;
+  border-radius: 5%;
+  text-align: center;
+  width: 10%;
+}
+.logo-text{
+  color: #3590c4;
+  font-size: 3rem;
+}
+.login-form-home{
+  width: 5%;
+  position: relative;
+  left: 45%;
+}
+.nav-item{
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.3rem;
+  position: relative;
+  padding-left: 30px;
+  font-weight: bold;
+}
+.login-btn{
+  border-radius: 5%;
+  width: 10rem;
+  font-size: 1.3rem;
+  padding:5px 10px;
+  border-style: hidden;
+  color: white;
+  background-color: #3590c4;
+  border-style: solid;
+  border-color: #3590c4;
+}
+
+/* TITLE */
+
+.title{
+  background-color:  white;
+  padding: 40px 30px 50px 30px;
+  text-align: center;
+}
+.moto{
+  position: relative;
+  left: 60px;
+  font-size: 3.5rem;
+  color: #3590c4;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 1rem;
+  font-weight: 500;
+}
+.carousel-control-prev-icon{
+  position: relative;
+  top: 100px;
+  background-color: #3590c4;
+}
+.carousel-control-next-icon{
+  position: relative;
+  top: 100px;
+  background-color: #3590c4;
+}
+#features{
+  padding-top: 50px;
+  text-align: center;
+}
+.feature-text{
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 30px;
+  color: #3590c4;
+}
+.feature-desc{
+  padding: 0 70px 0 70px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  color: #3590c4;
+}
+.feature-btn{
+  position: relative;
+  margin-top: 20px;
+}
+.feature-img{
+  width: 400px;
+  height: 300px;
+}
+
+/* about */
+
+.aboutHR{
+  background-color: white;
+  border-top: 1px dotted #AEBDCA;
+  border-width: 10px;
+  width: 5%;
+  margin: 100px auto;
+}
+
+.about-section{
+  text-align: center;
+  padding: 2rem 10rem 8rem;
+  background-color: white;
+}
+.about{
+  font-family: 'Montserrat', sans-serif;
+  font-size: 3rem;
+  line-height: 2rem;
+  padding-bottom: 30px;
+  color: #3590c4;
+}
+.about-desc{
+  position: relative;
+  left: 40px;
+  font-family: 'Quicksand', sans-serif;
+  width: 200px;
+  height: 250px;
+  background-color: #3590c4;
+  color: white;
+  font-size: 1rem;
+  top: 40px;
+  border-radius: 20%;
+  border-style: solid;
+  padding: 20px 10px;
+  margin: 0;
+}
+.feedback-section{
+  background-color: #3590c4;
+  padding-top: 100px;
+  padding-bottom: 50px;
+  text-align: center;
+  color: white;
+}
+.feedback-header{
+  font-family: 'Montserrat', sans-serif;
+  padding: 0 50px 30px 50px;
+}
+.feedback-sub{
+  font-family: 'Quicksand', sans-serif;
+  font-weight: bold;
+  padding-bottom: 20px;
+}
+.social-btn{
+  position: relative;
+  right: 20px;
+  margin-left: 40px;
+  border-radius: 15%;
+  border-style: hidden;
+  padding: 5px 10px 5px 10px;
+}
+.twitter{
+  color: white;
+  background-color: #84DFFF;
+}
+.twitter:hover{
+  color: #84DFFF;
+  background-color: white;
+  border-color: #84DFFF;
+  border-style: solid;
+}
+.mail{
+  color: white;
+  background-color: #FBD148;
+}
+.mail:hover{
+  color: #FBD148;
+  background-color: white;
+  border-color: #FBD148;
+  border-style: solid;
+}
+.insta{
+  color: white;
+  background-color: #FF5F7E;
+}
+.insta:hover{
+  color: #FF5F7E;
+  background-color: white;
+  border-color: #FF5F7E;
+  border-style: solid;
+}
+.footer{
+  text-align: center;
+  padding-top: 90px;
+}
+.footer-header{
+  font-family: 'Montserrat', sans-serif;
+  padding-bottom: 30px;
+}
+.footer-btn{
+  margin-left: 20px;
+  font-family: 'Montserrat', sans-serif;
+}
+.copyright{
+  padding-top: 40px;
+  font-size: 12px;
+}
+
+
+/* dashboard */
+
+.accountBtn{
+  position: relative;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  background-color: #3590c4;
+  color: white;
+  font-weight: 450;
+  font-size: 1.5rem;
+  border-style: none;
+}
+
+.logout{
+  background-color: #3590c4;
+  border-style: none;
+  color: red;
+  font-size: 1.5rem;
+}

@@ -1,0 +1,11 @@
+<%- include("header") -%>
+  <form action="/<%=username%>/create" method="post">
+      <input type="text" name="pollTitle" placeholder="Pole Title" required><br>
+      <input type="password" name="pollID" placeholder="Poll ID" required><br>
+      <textarea rows="6" name="desc" cols="50" placeholder="Description" value="emtpy"></textarea>><br>
+      <button type="submit">Add Candidates</button>
+  </form>
+  <form action="/<%=username%>" method="get">
+    <button type="submit"> Cancel </button>
+  </form>
+  <%- include("footer") -%>

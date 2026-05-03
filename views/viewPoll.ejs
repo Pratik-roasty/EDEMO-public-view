@@ -1,0 +1,19 @@
+<%- include("header") -%>
+<form action="/<%=username%>" method="get">
+    <button type="submit">Home</i></button>
+</form>
+<h3><%=pollTitle%></h3>
+<table  style="width: 30rem;">
+    <tr>
+        <th>Candidate Name</th>
+        <th>Votes</th>
+    </tr>
+    <%for(var i=0;i<candidates.length;i++){ %>
+    <tr>
+        <td><%=candidates[i]%></td>
+        <td><%=votes[i]%></td>
+    </tr>
+    <%}%>
+
+</table>
+<%-include("footer")-%>

@@ -1,0 +1,16 @@
+<%- include("header") -%>
+<h2><%=title%></h2>
+<% for(var i=0;i<nameList.length;i++){ %>
+    <h4><%=nameList[i]%></h4>
+<%}%>
+<form action="/<%=user%>/<%=pollid%>/candidates" method="post">
+    <input type="text" name="candidate" placeholder="Candidate username">
+    <button type="submit">+</button>
+</form>
+<form action="/<%=user%>/<%=pollid%>/viewPoll" method="get">
+    <button type="submit">Done</button>
+</form>
+<form action="/<%=user%>/<%=pollid%>/delete" method="get">
+    <button type="submit"> Cancel </button>
+</form>
+<%- include("footer") -%>

@@ -1,0 +1,12 @@
+<%- include("header") -%>
+
+<form action="/<%=user.username%>" method="get">
+    <button type="submit">Home</button>
+</form>
+<h3><%=user.name%></h3>
+<p><%=user.username%></p>
+<h4>Polls you created: </h4>
+<% for(var i=0;i<polls.length;i++){ %>
+    <a href="/<%=user.username%>/<%=polls[i]._id%>/viewPoll"><%=polls[i].title%></a>
+<%}%>
+<%- include("footer") -%>

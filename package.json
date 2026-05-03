@@ -1,0 +1,26 @@
+{
+  "name": "edemo",
+  "version": "1.0.0",
+  "description": "This is my personal project. This project is for bringing elections online.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pratik Yadav",
+  "license": "ISC",
+  "engines": {
+    "node": "17.3.0"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.2",
+    "dotenv": "^16.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.3",
+    "express-session": "^1.17.2",
+    "mongoose": "^6.2.3",
+    "passport": "^0.5.2",
+    "passport-local-mongoose": "^6.1.0"
+  }
+}

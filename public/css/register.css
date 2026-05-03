@@ -1,0 +1,32 @@
+body{
+    text-align: center;
+}
+.regForm{
+    position: relative;
+    top: 5rem;
+    left: 35%;
+}
+.field{
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    width: 30%;
+    height: 2.3rem;
+}
+.navbar-brand{
+    letter-spacing: 7px;
+    font-family: 'Roboto Slab', serif;
+    position: relative;
+    left: 80px;
+    border-radius: 5%;
+    text-align: center;
+    width: 10%;
+}
+.logo-text{
+    color: #3590c4;
+    font-size: 3rem;
+}
+.regbtn{
+    width: 30%;
+    margin-top: 1.5rem;
+}

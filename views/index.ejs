@@ -1,0 +1,86 @@
+<%- include("header") -%>
+  <!-- TITLE -->
+  <div class="title">
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="/"><p class="logo-text">EDEMO</p></a>
+      </nav>
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <h1 class="moto">Amplifying <br> your <br>voice</h1>
+        <form class="login-form-home" action="/login" method="get">
+          <button type="submit" class="login-btn" name="button">LOGIN</button>
+        </form>
+      </div>
+      <div class="col-lg-6">
+        <div id="features" class="carousel slide" data-bs-ride="false">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img class="feature-img" src="images/image1.png" alt="">
+              <h2 class="feature-text">Host Your Elections</h2>
+              <p class="feature-desc">You can create your own poll to find your next leader or for making any choice.</p>
+
+            </div>
+            <div class="carousel-item">
+              <img class="feature-img" src="images/image2.png" alt="">
+              <h2 class="feature-text">Secure</h2>
+              <p class="feature-desc">We are providing you with a secure interface, allows only verified or known users to vote.</p>
+
+            </div>
+            <div class="carousel-item">
+              <img class="feature-img" src="images/image3.png" alt="">
+              <h2 class="feature-text">Good for analysis</h2>
+              <p class="feature-desc">You can use this to find interests of the people.</p>
+
+            </div>
+            <div class="carousel-item">
+              <img src="images/image4.png" alt="">
+              <h2 class="feature-text">Register on EDEMO now</h2>
+              <form action="/register" method="get">
+                <button type="submit" class="btn btn-secondary btn-lg feature-btn">Register</button>
+              </form>
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#features" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#features" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr class="aboutHR">
+  <!-- ABOUT -->
+  <div class="about-section">
+    <h2 class="about">About Website</h2>
+    <div class="row">
+      <div class="col-lg-3 col-md-6">
+        <p class="about-desc">Welcome you to a portal where you can have fun, where you can also take important decisions, you can also use this portal for purpose of analysis and many more other things. </p>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <p class="about-desc">You can create your own polls, you can vote on public polls and all this is done in a very secure way.</p>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <p class="about-desc">We are taking care of security of your data, your selections and also maintaining privacy of the comments that you make.</p>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <p class="about-desc">Conducting elections on a booth is a good idea but it involves lot of man power and wealth. This website can be efficient for election purpose.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEEDBACK -->
+
+  <div class="feedback-section">
+    <h2 class="feedback-header">We will be improving your experience on the website, if you have been through any query, feel free to report</h2>
+    <h3 class="feedback-sub">Here are our socials</h3>
+    <button type="button" class="social-btn insta" name="button"><i class="fab fa-instagram"></i> Instagram</button>
+    <button type="button" class="social-btn twitter" name="button"><i class="fab fa-twitter"></i> Twitter</button>
+    <button type="button" class="social-btn mail" name="button"><i class="fas fa-envelope"></i> Gmail</button>
+  </div>
+  <%- include("footer") -%>
