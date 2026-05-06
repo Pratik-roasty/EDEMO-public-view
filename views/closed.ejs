@@ -6,6 +6,7 @@
             <h5 class="card-title"><%= polls[i].title %></h5>
             <p class="card-text"><%= polls[i].description %></p>
             <a href="/<%=username%>/<%= polls[i]._id %>/viewPoll" class="btn btn-primary">View Poll</a>
+            <p class="card-text mt-3"><strong>Winner: </strong><%= polls[i].winner %></p>
         </div>
     </div>
 <%}%>
@@ -18,5 +19,4 @@
         text-align: center;
     }
 </style>
-
 <%- include("footer") -%>

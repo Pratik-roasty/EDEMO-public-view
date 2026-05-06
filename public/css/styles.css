@@ -3,8 +3,10 @@ body{
 }
 /* navigation section starts here */
 .navigation-section{
-  background-color: #3590c4;
+  background-color: #1f2937;
+  color: #f9fafb;
 }
+
 .navbar-brand{
   letter-spacing: 7px;
   font-family: 'Roboto Slab', serif;
@@ -15,7 +17,6 @@ body{
   width: 10%;
 }
 .logo-text{
-  color: #3590c4;
   font-size: 3rem;
 }
 .login-form-home{
@@ -30,6 +31,13 @@ body{
   padding-left: 30px;
   font-weight: bold;
 }
+
+.nav-link{
+  color: white;
+  font-size: 1rem;
+}
+
+
 .login-btn{
   border-radius: 5%;
   width: 10rem;
@@ -60,6 +68,14 @@ body{
   letter-spacing: 1rem;
   font-weight: 500;
 }
+
+.welcome{
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  color: #3590c4;
+  padding-bottom: 30px;
+}
+
 .carousel-control-prev-icon{
   position: relative;
   top: 100px;
@@ -211,16 +227,16 @@ body{
   position: relative;
   margin-left: 2rem;
   margin-right: 2rem;
-  background-color: #3590c4;
+  background-color: #1f2937;
   color: white;
   font-weight: 450;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   border-style: none;
 }
 
 .logout{
-  background-color: #3590c4;
+  background-color: #1f2937;
   border-style: none;
-  color: red;
-  font-size: 1.5rem;
+  color: white;
+  font-size: 1.4rem;
 }

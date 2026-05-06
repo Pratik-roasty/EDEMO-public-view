@@ -1,33 +1,52 @@
 <%- include("header") -%>
-<div class="navigation-section container-fluid">
-    <nav class="navbar navbar-expand-lg navbar-dark">
-      <a class="navbar-brand" href="/<%=username%>">EDEMO</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/<%=username%>/about">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/<%=username%>/create">Create Poll</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/<%=username%>/active">Active Poll</a>
-          </li>
-        </ul>
-        <form action="/<%=username%>/account" method="get">
-          <button type="submit" class="accountBtn" name="button"><%=name%></button>
-        </form>
-        <form action="/<%=username%>/logout" method="get">
-          <button class="logout" type="submit"><i class="fas fa-power-off"></i></button>
-        </form>
+<div class="title">
+    <div class="row">
+      <div class="col-lg-6">
+        <h1 class="moto">Amplify <br> your <br>voice</h1>
       </div>
-    </nav>
-  </div>
-<h2>Welcome to EDEMO <%=name%></h2>
-<h4><%=username%></h4>
-<h4><%=email%></h4>
+      <div class="col-lg-6">
+        <div id="features" class="carousel slide" data-bs-ride="false">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img class="feature-img" src="images/image1.png" alt="">
+              <h2 class="feature-text">Host Your Elections</h2>
+              <p class="feature-desc">You can create your own poll to find your next leader or for making any choice.</p>
 
+            </div>
+            <div class="carousel-item">
+              <img class="feature-img" src="images/image2.png" alt="">
+              <h2 class="feature-text">Secure</h2>
+              <p class="feature-desc">We are providing you with a secure interface, allows only verified or known users to vote.</p>
+
+            </div>
+            <div class="carousel-item">
+              <img class="feature-img" src="images/image3.png" alt="">
+              <h2 class="feature-text">Good for analysis</h2>
+              <p class="feature-desc">You can use this to find interests of the people.</p>
+
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#features" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#features" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr class="aboutHR">
+
+  <!-- FEEDBACK -->
+
+  <div class="feedback-section">
+    <h2 class="feedback-header">We will be improving your experience on the website, if you have been through any query, feel free to report</h2>
+    <h3 class="feedback-sub">Here are our socials</h3>
+    <button type="button" class="social-btn insta" name="button"><i class="fab fa-instagram"></i> Instagram</button>
+    <button type="button" class="social-btn twitter" name="button"><i class="fab fa-twitter"></i> Twitter</button>
+    <button type="button" class="social-btn mail" name="button"><i class="fas fa-envelope"></i> Gmail</button>
+  </div>
 <%- include("footer") -%>

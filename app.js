@@ -38,6 +38,8 @@ passport.deserializeUser(User.deserializeUser());
 app.get("/",function(req,res){
     res.render("index");
 });
+
+
 //login route
 app.get("/login",function(req,res){
     res.render("login");
@@ -59,10 +61,14 @@ app.post("/login",function(req,res){
         }
     })
 })
+
+
 //registering user route
 app.get("/register",function(req,res){
     res.render("register");
 });
+
+
 //saving details into database.
 app.post("/register",function(req,res){
     User.register({username: req.body.username,name: req.body.name,email: req.body.email},req.body.password,function(err,user){
@@ -77,6 +83,8 @@ app.post("/register",function(req,res){
     })
 });
 
+
+//rendering dashboard if user is authenticated, else redirecting to login page.
 app.get("/:userRoute",function(req,res){
     if(req.isAuthenticated()){
         const username=req.params.userRoute;
@@ -96,38 +104,220 @@ app.get("/:userRoute",function(req,res){
     }
 })
 
+//about route
 app.get("/:userRoute/about",function(req,res){
     if(req.isAuthenticated()){
         const username=req.params.userRoute;
-        console.log(username);
-        res.render("about",{username: username});
+        User.findOne({username: username},function(err,foundUser){
+            if(err){
+                console.log(err);            
+            } else{
+                if(foundUser){
+                    res.render("about",{username: username,email: foundUser.email,name: foundUser.name});  
+                }else{
+                    res.send("User not found");
+                }
+            }
+        })
     } else{
         res.redirect("/login");
     }
 })
 
+//create poll route
 app.get("/:userRoute/create",function(req,res){
     if(req.isAuthenticated()){
         const username=req.params.userRoute;
-        res.render("create",{username: username});
+        User.findOne({username: username},function(err,foundUser){
+            if(err){
+                console.log(err);            
+            } else{
+                if(foundUser){
+                    res.render("create",{username: username,email: foundUser.email,name: foundUser.name});  
+                }else{
+                    res.send("User not found");
+                }
+            }
+        })
 
     } else{
         res.redirect("/login")
     }
 })
+
+app.post("/:userRoute/create",function(req,res){
+    if(req.isAuthenticated()){
+        const username=req.params.userRoute;
+        if(req.body.desc == "empty"){
+            const poll=new Poll({
+                pollID: req.body.pollID,
+                title: req.body.pollTitle,
+                publisher: username,
+                votes: [],
+                candidates: [],
+                nameOfCandidates: [],
+                isActive: true
+            });
+            poll.save();
+            res.redirect("/"+username+"/"+poll._id+"/candidates");
+        }
+        else{
+            const poll=new Poll({
+                pollID: req.body.pollID,
+                title: req.body.pollTitle,
+                publisher: username,
+                description: req.body.desc,
+                votes: [],
+                candidates: [],
+                nameOfCandidates: [],
+                isActive: true
+            });
+            poll.save();
+            res.redirect("/"+username+"/"+poll._id+"/candidates?message=OK");
+        }
+        
+    } else{
+        res.redirect("/login");
+    }
+
+});
+
+
+
+
+//active polls route
 app.get("/:userRoute/active",function(req,res){
     if(req.isAuthenticated()){
         const username=req.params.userRoute;
-        Poll.find({}, function(err,foundPolls){
+        Poll.find({isActive: true}, function(err,foundPolls){
             if(err){
                 console.log(err);
             }else{
-                res.render("active",{username: username,polls: foundPolls});
+                User.findOne({username: username},function(err,foundUser){
+                    if(err){
+                        console.log(err);
+                    } else{
+                        if(foundUser){
+                            res.render("active",{username: username,email: foundUser.email,name: foundUser.name,polls: foundPolls});
+                        }else{
+                            res.send("User not found");
+                        }
+                    }
+                });
             }
         });
 
     } else{
         res.redirect("/login")
+    }
+});
+
+
+
+//view poll route
+app.get("/:userRoute/:poll/viewPoll",function(req,res){
+    const messageEndpoll=req.query.messageEndpoll || null;
+    const message=req.query.message || null;
+    Poll.findOne({_id:req.params.poll},function(err,foundPoll){
+        if(err){
+            console.log(err);
+        }
+        else{
+            User.findOne({username: req.params.userRoute},function(err,foundUser){
+                if(err){
+                    console.log(err);
+                }                
+                else{
+                    if(foundUser){
+                        res.render("viewPoll",{candidates: foundPoll.nameOfCandidates,
+                        pollTitle: foundPoll.pollTitle,
+                        votes: foundPoll.votes,
+                        pollid: foundPoll._id,
+                        voters: foundPoll.voters,
+                        username: req.params.userRoute,
+                        name: foundUser.name,
+                        publisher: foundPoll.publisher,
+                        message: message,
+                        messageEndpoll: messageEndpoll,
+                        endReason: foundPoll.endReason,
+                        winner: foundPoll.winner,
+                        isActive: foundPoll.isActive
+                    });
+                    }
+                    else{
+                        res.send("User not found");
+                    }
+                }
+            });
+        }
+    })
+})
+
+
+
+//voting route
+
+app.post("/:userRoute/:poll/vote",function(req,res){
+    if(req.isAuthenticated()){
+        const username=req.params.userRoute;
+        const pollId=req.params.poll;
+        const candidateIndex=parseInt(req.body.candidate);
+        Poll.findOne({_id: pollId},function(err,foundPoll){
+            if(err){
+                console.log(err);
+            } else{
+
+                if(foundPoll.voters.includes(username)){
+                    res.redirect("/"+username+"/"+pollId+"/viewPoll?message=You have already voted");
+                }
+                else{
+                    foundPoll.votes[candidateIndex]++;
+                    foundPoll.voters.push(username);
+
+                    //updating the votedInPolls array of the user
+                    User.findOne({username: username},function(err,foundUser){
+                        if(err){
+                            console.log(err);
+                        } else{
+                            foundUser.votedInPolls.push(pollId);
+                            foundUser.save();
+                        }
+                    });
+                    foundPoll.save();
+                    res.redirect("/"+username+"/"+pollId+"/viewPoll?message=Vote cast successfully");
+                }
+            }
+        });
+    } 
+    else{
+        res.redirect("/login");
+    }
+});
+
+//ending poll route
+app.post("/:userRoute/:poll/endPoll",function(req,res){
+    if(req.isAuthenticated()){
+        const username=req.params.userRoute;
+        const pollId=req.params.poll;
+        Poll.findOne({_id: pollId},function(err,foundPoll){
+            if(err){
+                console.log(err);
+            } else{
+                if(foundPoll.publisher===username){
+                    const winnerIndex=foundPoll.votes.indexOf(Math.max(...foundPoll.votes));
+                    Poll.update({_id: pollId},{isActive: false, endReason: req.body.reason, winner: foundPoll.nameOfCandidates[winnerIndex]},function(err){
+                        if(err){
+                            console.log(err);
+                        }
+                    });
+                    res.redirect("/"+username+"/"+pollId+"/viewPoll?messageEndpoll=End");
+                } else{
+                    res.redirect("/"+username+"/"+pollId+"/viewPoll?messageEndpoll=You are not the publisher of this poll");
+                }
+            }
+        });
+    } else{
+        res.redirect("/login");
     }
 });
 
@@ -141,7 +331,20 @@ app.get("/:userRoute/account",function(req,res){
                     if(err){
                         console.log(err);
                     } else{
-                        res.render("account",{user:foundUser,polls:foundPolls});
+                        //find all the polls in which the user has voted and pass it to the account page
+                        Poll.find({_id: {$in: foundUser.votedInPolls}},function(err,foundVotedPolls){
+                            if(err){
+                                console.log(err);
+                            } else{
+                                const userVotedPolls=foundVotedPolls;
+                                res.render("account",{
+                                    userVotedPolls: userVotedPolls, 
+                                    user:foundUser, polls:foundPolls, 
+                                    username: req.params.userRoute, 
+                                    name: foundUser.name
+                                });
+                            }
+                        })
                     }
                 })
             }
@@ -155,11 +358,30 @@ app.get("/:userRoute/account",function(req,res){
 app.get("/:userRoute/:poll/candidates",function(req,res){
     if(req.isAuthenticated()){
         const username=req.params.userRoute;
+        const message=req.query.message || null;
         Poll.findOne({publisher: username,_id: req.params.poll},function(err,curPoll){
             if(err){
                 console.log(err);
             } else{
-                res.render("candidates",{user:username, pollid: curPoll._id, title: curPoll.title, nameList: curPoll.nameOfCandidates});
+                User.findOne({username: username},function(err,foundUser){
+                    if(err){
+                        console.log(err);
+                    } else{
+                        if(foundUser){
+                            res.render("candidates",{
+                                 username:username, 
+                                pollid: curPoll._id, 
+                                title: curPoll.title, 
+                                nameList: curPoll.nameOfCandidates, 
+                                message: message,
+                                name: foundUser.name
+                            });
+                        }else{
+                            res.send("User not found");
+                        }
+                    }
+                   
+                });
             }
         });
     }
@@ -172,7 +394,7 @@ app.post("/:userRoute/:poll/candidates",function(req,res){
     if(req.isAuthenticated()){
         User.findOne({username: req.body.candidate},function(err,user){
             if(err || user==null){
-                res.redirect("/"+req.params.userRoute+"/"+req.params.poll+"/candidates");
+                res.redirect("/"+req.params.userRoute+"/"+req.params.poll+"/candidates?message=User not found");
             }
             else{
                 const tempId=user._id;
@@ -202,7 +424,7 @@ app.post("/:userRoute/:poll/candidates",function(req,res){
                                         console.log(err);
                                     }
                                     else{
-                                        res.redirect("/"+req.params.userRoute+"/"+req.params.poll+"/candidates")
+                                        res.redirect("/"+req.params.userRoute+"/"+req.params.poll+"/candidates?message=OK");
                                     }
                                 });
                             }
@@ -231,55 +453,6 @@ app.get("/:userRoute/:poll/delete",function(req,res){
 })
 
 
-app.get("/:userRoute/:poll/viewPoll",function(req,res){
-    Poll.findOne({_id:req.params.poll},function(err,foundPoll){
-        if(err){
-            console.log(err);
-        }
-        else{
-            res.render("viewPoll",{candidates: foundPoll.nameOfCandidates,
-                pollTitle: foundPoll.pollTitle,
-                votes: foundPoll.votes,
-                username: req.params.userRoute
-            });
-        }
-    })
-})
-
-app.post("/:userRoute/create",function(req,res){
-    if(req.isAuthenticated()){
-        const username=req.params.userRoute;
-        if(req.body.desc == "empty"){
-            const poll=new Poll({
-                pollID: req.body.pollID,
-                title: req.body.pollTitle,
-                publisher: username,
-                votes: [],
-                candidates: [],
-                nameOfCandidates: []
-            });
-            poll.save();
-            res.redirect("/"+username+"/"+poll._id+"/candidates");
-        }
-        else{
-            const poll=new Poll({
-                pollID: req.body.pollID,
-                title: req.body.pollTitle,
-                publisher: username,
-                description: req.body.desc,
-                votes: [],
-                candidates: [],
-                nameOfCandidates: []
-            });
-            poll.save();
-            res.redirect("/"+username+"/"+poll._id+"/candidates");
-        }
-        
-    } else{
-        res.redirect("/login");
-    }
-
-});
 
 app.post("/:userRoute/candidates",function(req,res){
     if(req.isAuthenticated()){
@@ -293,6 +466,34 @@ app.post("/:userRoute/candidates",function(req,res){
                 res.redirect("/"+username+"/candidates");
             }
         })
+    }
+    else{
+        res.redirect("/login");
+    }
+})
+
+
+//route for closed polls
+app.get("/:userRoute/closed",function(req,res){
+    if(req.isAuthenticated()){
+        const username=req.params.userRoute;
+        Poll.find({isActive: false}, function(err,foundPolls){
+            if(err){
+                console.log(err);
+            }else{
+                User.findOne({username: username},function(err,foundUser){
+                    if(err){
+                        console.log(err);
+                    } else{
+                        if(foundUser){
+                            res.render("closed",{username: username,email: foundUser.email,name: foundUser.name,polls: foundPolls});
+                        }else{
+                            res.send("User not found");
+                        }
+                    }
+                });
+            }
+        });
     }
     else{
         res.redirect("/login");

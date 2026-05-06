@@ -1,12 +1,101 @@
 <%- include("header") -%>
 
-<form action="/<%=user.username%>" method="get">
-    <button type="submit">Home</button>
-</form>
-<h3><%=user.name%></h3>
-<p><%=user.username%></p>
-<h4>Polls you created: </h4>
-<% for(var i=0;i<polls.length;i++){ %>
-    <a href="/<%=user.username%>/<%=polls[i]._id%>/viewPoll"><%=polls[i].title%></a>
-<%}%>
+<div class="container account-container">
+    <h1 class="account-header">My Account</h1>
+    <div class="account-info">
+        <p><strong>Username:</strong> <%= user.username %></p>
+        <p><strong>Email:</strong> <%= user.email %></p>
+        <p><strong>Name:</strong> <%= user.name %></p>
+    </div>
+</div>
+    <div class="polls-container">
+        <div class="pollsCreated">
+            <h2 class="account-subheader">Polls you created</h2>
+            <% if (polls.length > 0) { %>
+                <% polls.forEach(poll => { %>
+
+                    <div class="pollCreated card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= poll.title %></h5>
+                            <p class="card-text"><%= poll.description %></p>
+                            <a href="/<%=username%>/<%= poll._id %>/viewPoll" class="btn btn-primary">View Poll</a>
+                        </div>
+                    </div>
+                        
+                <% }) %>
+            <% } else { %>
+                <p>You haven't created any polls yet.</p>
+            <% } %>
+
+        </div>
+
+        <div class="votedPolls">
+            <h2 class="polls-subheader">Polls you voted in</h2>
+            <% if (userVotedPolls.length > 0) { %>
+                <% userVotedPolls.forEach(poll => { %>
+
+                    <div class="votedPoll card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= poll.title %></h5>
+                            <p class="card-text"><%= poll.description %></p>
+                            <a href="/<%=username%>/<%= poll._id %>/viewPoll" class="btn btn-primary">View Poll</a>
+                        </div>
+                    </div>
+                    
+                <% }) %>
+            <% } else { %>
+                <p>You haven't voted in any polls yet.</p>
+            <% } %>
+        </div>
+
+
+    </div>
+
+
 <%- include("footer") -%>
+
+<style>
+
+    .polls-container{
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        margin-top: 3rem;
+        text-align: center;
+    }
+
+    .pollsCreated, .votedPolls{
+        width: 50%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .pollCreated, .votedPoll{
+        width: 80%;
+        margin: auto;
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+
+    .account-header{
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+    }
+    .account-info p{
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    .account-subheader{
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    .polls-subheader{
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+</style>

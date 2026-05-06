@@ -1,11 +1,74 @@
 <%- include("header") -%>
-  <form action="/<%=username%>/create" method="post">
-      <input type="text" name="pollTitle" placeholder="Pole Title" required><br>
-      <input type="password" name="pollID" placeholder="Poll ID" required><br>
-      <textarea rows="6" name="desc" cols="50" placeholder="Description" value="emtpy"></textarea>><br>
-      <button type="submit">Add Candidates</button>
+<div class="create">
+  <h1 class="createTitle">Create Poll</h1>
+   <form action="/<%=username%>/create" method="post">
+      <input class="input" type="text" name="pollTitle" placeholder="Pole Title" required><br>
+      <input class="input" type="password" name="pollID" placeholder="Poll ID" required><br>
+      <textarea class="description" rows="6" name="desc" cols="50" placeholder="Description" value="emtpy"></textarea><br>
+      <button class="add btn btn-primary" type="submit">Add Candidates</button>
+      <button onclick="goHome()" class="cancel btn btn-danger" type="submit"> Cancel </button>
   </form>
-  <form action="/<%=username%>" method="get">
-    <button type="submit"> Cancel </button>
-  </form>
+
+  <script>
+
+    function goHome(){
+      window.location.href = "/<%=username%>";
+    }
+
+
+  </script>
+
+
+</div>
+
+<style>
+  .create{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+  }
+  .createTitle{
+    font-size: 3rem;
+    margin-bottom: 20px;
+  }
+  .input{
+    width: 300px;
+    height: 40px;
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  .description{
+    width: 300px;
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  .add{
+    margin: 1rem;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .cancel{
+    margin: 1rem;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+  }
+
+
+</style>
   <%- include("footer") -%>

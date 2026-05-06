@@ -3,14 +3,32 @@
 <% for(var i=0;i<nameList.length;i++){ %>
     <h4><%=nameList[i]%></h4>
 <%}%>
-<form action="/<%=user%>/<%=pollid%>/candidates" method="post">
+<form action="/<%=username%>/<%=pollid%>/candidates" method="post">
     <input type="text" name="candidate" placeholder="Candidate username">
     <button type="submit">+</button>
 </form>
-<form action="/<%=user%>/<%=pollid%>/viewPoll" method="get">
-    <button type="submit">Done</button>
+<form action="/<%=username%>/<%=pollid%>/viewPoll" method="get">
+    <button id="done" type="submit">Done</button>
 </form>
-<form action="/<%=user%>/<%=pollid%>/delete" method="get">
+<form action="/<%=username%>/<%=pollid%>/delete" method="get">
     <button type="submit"> Cancel </button>
 </form>
+
+<script>
+    const message="<%=message%>";
+    console.log(message);
+    if(message!="OK" && message!=null){
+        alert(message);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const done = document.getElementById("done");
+    const nameList = <%- JSON.stringify(nameList) %>;
+
+        if (nameList.length === 0) {
+            done.disabled = true;
+        }
+    });
+
+</script>
 <%- include("footer") -%>

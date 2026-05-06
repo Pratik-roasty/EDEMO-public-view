@@ -6,7 +6,7 @@ const userSchema=new mongoose.Schema({
     password: String,
     name: String,
     email: String,
-    participated: [{
+    votedInPolls: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: Poll.Schema
     }],

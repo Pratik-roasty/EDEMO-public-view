@@ -9,7 +9,11 @@ const pollSchema=new mongoose.Schema({
     votes: [Number],
     description: String,
     likes: Number,
-    nameOfCandidates: [String]
+    nameOfCandidates: [String],
+    voters: [String],
+    isActive: Boolean,
+    endReason: String,
+    winner: String
 });
 
 const Poll=new mongoose.model("Poll",pollSchema);
