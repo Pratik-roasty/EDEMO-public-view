@@ -1,0 +1,179 @@
+:root {
+            --primary: #2563eb;
+            --navy: #0f172a;
+            --sidebar: #1e293b;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --text-muted: #64748b;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: var(--bg-light);
+            color: var(--navy);
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation (Consistent with Dashboard) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 3rem;
+            color: var(--white);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .user-section {
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+        }
+
+        /* Main Content Container */
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 2.5rem 4rem;
+        }
+
+        .container { max-width: 800px; }
+        h1 { font-size: 2.25rem; margin-bottom: 0.5rem; }
+        .poll-context { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem; }
+
+        /* Candidate Addition Card */
+        .card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+
+        input {
+            flex-grow: 1;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+
+        /* Candidate List Display */
+        .candidate-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 2.5rem;
+        }
+
+        .candidate-tag {
+            background: #f1f5f9;
+            padding: 10px 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            animation: slideIn 0.2s ease-out;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .remove-btn {
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+            padding: 2px 6px;
+        }
+
+        /* Action Buttons */
+        .button-bar {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--navy); }
+        .btn-outline:hover { background: var(--bg-light); }
+
+        /* Mobile CTA Footer */
+        .footer-cta {
+            margin-top: 4rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
+        }
+
+        .app-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .app-btn {
+            background: #111827;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }

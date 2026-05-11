@@ -15,6 +15,8 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+app.use(express.json());
+
 app.use(session({
     secret: process.env.SECRET,
     resave: false,
@@ -40,10 +42,6 @@ app.get("/",function(req,res){
 });
 
 
-//login route
-app.get("/login",function(req,res){
-    res.render("login");
-});
 //checking credentials
 app.post("/login",function(req,res){
     const user=new User({
@@ -51,11 +49,14 @@ app.post("/login",function(req,res){
         password: req.body.password
     });
 
+    console.log("here: "+req.body.username);
+
     req.login(user,function(err){
         if(err){
             console.log(err);
+            res.render("index", {loginError: "Invalid username or password. Please try again."});
         } else{
-            passport.authenticate("local",{ failureRedirect: '/login' })(req,res,function(){
+            passport.authenticate("local",{ failureRedirect: '/' })(req,res,function(){
                 res.redirect("/"+req.body.username);
             })
         }
@@ -63,18 +64,12 @@ app.post("/login",function(req,res){
 })
 
 
-//registering user route
-app.get("/register",function(req,res){
-    res.render("register");
-});
-
-
 //saving details into database.
 app.post("/register",function(req,res){
     User.register({username: req.body.username,name: req.body.name,email: req.body.email},req.body.password,function(err,user){
         if(err){
             console.log(err);
-            res.redirect("/register");
+            res.render("index", {registerError: "Username already exists. Please choose a different username."});
         } else{
             passport.authenticate("local",{failureRedirect: '/register'})(req,res,function(){
                 res.redirect("/"+req.body.username);
@@ -93,57 +88,54 @@ app.get("/:userRoute",function(req,res){
                 console.log(err);
             } else{
                 if(foundUser){
-                    res.render("dashboard",{username: username,email: foundUser.email,name: foundUser.name});
-                }else{
+                    //find all the active polls in the database and pass it to the dashboard page
+                    Poll.find({isActive: true}, function(err, activePolls) {
+                        if(err) {
+                            console.log(err);
+                        } else {
+                            Poll.find({isActive: false}, function(err, closedPolls) {
+                                if(err) {
+                                    console.log(err);
+                                } else {
+                                    //find sum of votes received by all polls created by the user and pass it to the dashboard page as totalVotesReceived
+                                    Poll.find({publisher: username}, function(err, userPolls) {
+                                        if(err) {
+                                            console.log(err);
+                                        }
+                                        else {                                            
+                                            const totalVotesReceived = userPolls.reduce((total, poll) => total + poll.votes.reduce((a, b) => a + b, 0), 0);
+                                            console.log("Total votes received: " + totalVotesReceived);
+                                            const globalPolls= activePolls.length + closedPolls.length;
+                                        
+                                            res.render("dashboard",{
+                                                user: foundUser,
+                                                username: username,
+                                                email: foundUser.email,
+                                                name: foundUser.name,
+                                                activePolls: activePolls,
+                                                closedPolls: closedPolls,
+                                                userTotalPolls: foundUser.created.length,
+                                                totalVotesReceived: totalVotesReceived,
+                                                globalPolls: globalPolls
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } else{
                     res.send("User not found");
                 }
             }
         })
     } else{
-        res.redirect("/login");
+        res.redirect("/");
     }
-})
+});
 
-//about route
-app.get("/:userRoute/about",function(req,res){
-    if(req.isAuthenticated()){
-        const username=req.params.userRoute;
-        User.findOne({username: username},function(err,foundUser){
-            if(err){
-                console.log(err);            
-            } else{
-                if(foundUser){
-                    res.render("about",{username: username,email: foundUser.email,name: foundUser.name});  
-                }else{
-                    res.send("User not found");
-                }
-            }
-        })
-    } else{
-        res.redirect("/login");
-    }
-})
 
-//create poll route
-app.get("/:userRoute/create",function(req,res){
-    if(req.isAuthenticated()){
-        const username=req.params.userRoute;
-        User.findOne({username: username},function(err,foundUser){
-            if(err){
-                console.log(err);            
-            } else{
-                if(foundUser){
-                    res.render("create",{username: username,email: foundUser.email,name: foundUser.name});  
-                }else{
-                    res.send("User not found");
-                }
-            }
-        })
-
-    } else{
-        res.redirect("/login")
-    }
-})
+//dashboards post the create request on this route. It creates and saves a new poll and redirects to the add candidates page of that poll.
 
 app.post("/:userRoute/create",function(req,res){
     if(req.isAuthenticated()){
@@ -177,10 +169,110 @@ app.post("/:userRoute/create",function(req,res){
         }
         
     } else{
-        res.redirect("/login");
+        res.redirect("/");
     }
 
 });
+
+
+//add candidates page rendering route.
+
+app.get("/:userRoute/:poll/candidates",function(req,res){
+    if(req.isAuthenticated()){
+        const username=req.params.userRoute;
+        const message=req.query.message || null;
+        Poll.findOne({publisher: username,_id: req.params.poll},function(err,curPoll){
+            if(err){
+                console.log(err);
+            } else{
+                User.findOne({username: username},function(err,foundUser){
+                    if(err){
+                        console.log(err);
+                    } else{
+                        if(foundUser){
+                            res.render("candidates",{
+                                 username:username, 
+                                pollid: curPoll._id, 
+                                title: curPoll.title, 
+                                message: message,
+                                name: foundUser.name
+                            });
+                        }else{
+                            res.send("User not found");
+                        }
+                    }
+                   
+                });
+            }
+        });
+    }
+    else{
+        res.redirect("/");
+    }
+});
+
+
+//post request to add candidates to the poll. It checks if the candidates are registered users. If yes, it adds them to the poll and initializes their votes to 0. If not, it redirects back to the candidates page with an error message.
+app.post("/:userRoute/:poll/candidates",function(req,res){
+    if(req.isAuthenticated()){
+        //the candidates are sent as an array in the request body
+        const candidates=req.body.candidates;
+        const username=req.params.userRoute;
+        console.log("Here in post request: " + candidates);
+
+        //check if the candidate in candidates array is a part of user database. If not, send an error message to the candidates page.
+        User.find({username: {$in: candidates}},function(err,foundUsers){
+            if(err){
+                console.log(err);
+            } else{
+                if(foundUsers.length!==candidates.length){
+                    res.json({
+                        redirect: "/"+username+"/"+req.params.poll+"/candidates",
+                        message: "One or more candidates are not registered users"
+                    });
+                }
+                else{
+                    Poll.findOne({_id: req.params.poll},function(err,foundPoll){
+                        if(err){
+                            console.log(err);
+                        } else{
+                            foundPoll.candidates=candidates;
+                            foundPoll.nameOfCandidates=candidates.map(candidate => {
+                                const user=foundUsers.find(user => user.username === candidate);
+                                return user ? user.name : candidate;
+                            });
+                            foundPoll.votes=new Array(candidates.length).fill(0);
+                            foundPoll.save();
+                            //redirect to view poll page of the poll
+                            User.findOne({username: username},function(err,foundUser){
+                                if(err){
+                                    console.log(err);
+                                } else{
+                                    if(foundUser){
+                                        console.log("redirecting to view poll page");
+                                        foundUser.created.push(foundPoll._id);
+                                        foundUser.save();
+                                        res.json({
+                                            redirect: "/"+username+"/"+req.params.poll+"/viewPoll",
+                                            message: "Candidates added successfully, redirecring to view poll page...."
+                                        });
+                                    }
+                                    else{
+                                        res.send("User not found");
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    }
+    else{
+        res.redirect("/");
+    }
+})
+
 
 
 
@@ -208,7 +300,7 @@ app.get("/:userRoute/active",function(req,res){
         });
 
     } else{
-        res.redirect("/login")
+        res.redirect("/")
     }
 });
 
@@ -229,7 +321,9 @@ app.get("/:userRoute/:poll/viewPoll",function(req,res){
                 }                
                 else{
                     if(foundUser){
-                        res.render("viewPoll",{candidates: foundPoll.nameOfCandidates,
+                        res.render("viewPoll",{
+                        candidates: foundPoll.nameOfCandidates,
+                        userCandidates: foundPoll.candidates,
                         pollTitle: foundPoll.pollTitle,
                         votes: foundPoll.votes,
                         pollid: foundPoll._id,
@@ -290,7 +384,7 @@ app.post("/:userRoute/:poll/vote",function(req,res){
         });
     } 
     else{
-        res.redirect("/login");
+        res.redirect("/");
     }
 });
 
@@ -317,7 +411,7 @@ app.post("/:userRoute/:poll/endPoll",function(req,res){
             }
         });
     } else{
-        res.redirect("/login");
+        res.redirect("/");
     }
 });
 
@@ -339,7 +433,8 @@ app.get("/:userRoute/account",function(req,res){
                                 const userVotedPolls=foundVotedPolls;
                                 res.render("account",{
                                     userVotedPolls: userVotedPolls, 
-                                    user:foundUser, polls:foundPolls, 
+                                    user:foundUser, 
+                                    polls:foundPolls, 
                                     username: req.params.userRoute, 
                                     name: foundUser.name
                                 });
@@ -351,90 +446,52 @@ app.get("/:userRoute/account",function(req,res){
         })
     }
     else{
-        res.redirect("/login");
+        res.redirect("/");
     }
 });
 
-app.get("/:userRoute/:poll/candidates",function(req,res){
+
+app.get("/:userRoute/profile/:candidate",function(req,res){
     if(req.isAuthenticated()){
-        const username=req.params.userRoute;
-        const message=req.query.message || null;
-        Poll.findOne({publisher: username,_id: req.params.poll},function(err,curPoll){
+        User.findOne({username: req.params.candidate},function(err,foundUser){
             if(err){
                 console.log(err);
             } else{
-                User.findOne({username: username},function(err,foundUser){
-                    if(err){
-                        console.log(err);
-                    } else{
-                        if(foundUser){
-                            res.render("candidates",{
-                                 username:username, 
-                                pollid: curPoll._id, 
-                                title: curPoll.title, 
-                                nameList: curPoll.nameOfCandidates, 
-                                message: message,
-                                name: foundUser.name
-                            });
-                        }else{
-                            res.send("User not found");
+                if(foundUser){
+                    //find polls created by the candidate and polls in which the candidate has voted
+                    Poll.find({publisher: foundUser.username},function(err,createdPolls){
+                        if(err){
+                            console.log(err);
+                        } else{
+                            Poll.find({_id: {$in: foundUser.votedInPolls}},function(err,votedPolls){
+                                if(err){
+                                    console.log(err);
+                                } else{
+                                    res.render("account",{
+                                        user: foundUser,
+                                        polls: createdPolls,
+                                        userVotedPolls: votedPolls,
+                                        username: req.params.userRoute,
+                                        name: foundUser.name,
+                                        email: foundUser.email
+                                    });
+                                }
+                            })
                         }
-                    }
-                   
-                });
-            }
-        });
-    }
-    else{
-        res.redirect("/login");
-    }
-});
-
-app.post("/:userRoute/:poll/candidates",function(req,res){
-    if(req.isAuthenticated()){
-        User.findOne({username: req.body.candidate},function(err,user){
-            if(err || user==null){
-                res.redirect("/"+req.params.userRoute+"/"+req.params.poll+"/candidates?message=User not found");
-            }
-            else{
-                const tempId=user._id;
-                console.log("here: "+user.name);
-                var listOfCandidates=[];
-                var names=[];
-                var allVotes=[];
-                Poll.findOne({_id:req.params.poll},function(err,result){
-                    if(err){
-                        console.log(err)
-                        res.redirect("/"+req.params.userRoute+"/"+req.params.poll+"/candidates")
-                    }
-                    else{
-                        listOfCandidates=result.candidates;
-                        names=result.nameOfCandidates;
-                        allVotes=result.votes;
-                        allVotes.push(0);
-                        listOfCandidates.push(tempId);
-                        User.findOne({_id: tempId},function(err,foundUser){
-                            if(err){
-                                console.log(err);
-                            }
-                            else{
-                                names.push(foundUser.username);
-                                Poll.update({_id:req.params.poll},{candidates:listOfCandidates, nameOfCandidates: names,votes: allVotes},function(err){
-                                    if(err){
-                                        console.log(err);
-                                    }
-                                    else{
-                                        res.redirect("/"+req.params.userRoute+"/"+req.params.poll+"/candidates?message=OK");
-                                    }
-                                });
-                            }
-                        })
-                    }
-                });
+                    })
+                }
+                else{
+                    res.send("User not found");
+                }
             }
         })
     }
+    else{
+        res.redirect("/");
+    }
 })
+
+
 
 app.get("/:userRoute/:poll/delete",function(req,res){
     if(req.isAuthenticated()){
@@ -448,7 +505,7 @@ app.get("/:userRoute/:poll/delete",function(req,res){
         })
     }
     else{
-        res.redirect("/login");
+        res.redirect("/");
     }
 })
 
@@ -468,7 +525,7 @@ app.post("/:userRoute/candidates",function(req,res){
         })
     }
     else{
-        res.redirect("/login");
+        res.redirect("/");
     }
 })
 
@@ -496,7 +553,7 @@ app.get("/:userRoute/closed",function(req,res){
         });
     }
     else{
-        res.redirect("/login");
+        res.redirect("/");
     }
 })
 

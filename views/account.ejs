@@ -1,101 +1,59 @@
-<%- include("header") -%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDEMO | My Account</title>
+    <link rel="stylesheet" href="/css/account.css">
+</head>
+<body>
 
-<div class="container account-container">
-    <h1 class="account-header">My Account</h1>
-    <div class="account-info">
-        <p><strong>Username:</strong> <%= user.username %></p>
-        <p><strong>Email:</strong> <%= user.email %></p>
-        <p><strong>Name:</strong> <%= user.name %></p>
-    </div>
-</div>
-    <div class="polls-container">
-        <div class="pollsCreated">
-            <h2 class="account-subheader">Polls you created</h2>
-            <% if (polls.length > 0) { %>
-                <% polls.forEach(poll => { %>
+    <aside class="sidebar">
+        <div class="sidebar-logo">EDEMO</div>
+        <nav>
+            <div class="nav-item" onclick="window.location.href='/<%= username %>'">Dashboard</div>
+        </nav>
+        <div style="margin-top:auto; color: white; opacity: 0.8; font-weight: 600;">My Account</div>
+        <button onclick="window.location.href='/<%= username %>/logout'" class="logout-btn">Logout</button>
+    </aside>
 
-                    <div class="pollCreated card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title"><%= poll.title %></h5>
-                            <p class="card-text"><%= poll.description %></p>
-                            <a href="/<%=username%>/<%= poll._id %>/viewPoll" class="btn btn-primary">View Poll</a>
-                        </div>
-                    </div>
-                        
-                <% }) %>
-            <% } else { %>
-                <p>You haven't created any polls yet.</p>
-            <% } %>
-
+    <main class="main-content">
+        <div class="profile-card">
+            <div class="avatar-circle">PY</div>
+            <div class="profile-info">
+                <h1><%=user.name%></h1>
+                <p><strong>Username:</strong> <%=user.username%></p>
+                <p><strong>Email:</strong> <%=user.email%></p>
+            </div>
         </div>
 
-        <div class="votedPolls">
-            <h2 class="polls-subheader">Polls you voted in</h2>
-            <% if (userVotedPolls.length > 0) { %>
-                <% userVotedPolls.forEach(poll => { %>
-
-                    <div class="votedPoll card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title"><%= poll.title %></h5>
-                            <p class="card-text"><%= poll.description %></p>
-                            <a href="/<%=username%>/<%= poll._id %>/viewPoll" class="btn btn-primary">View Poll</a>
-                        </div>
-                    </div>
-                    
-                <% }) %>
-            <% } else { %>
-                <p>You haven't voted in any polls yet.</p>
-            <% } %>
+        <div class="tab-container">
+            <div class="tab active" onclick="switchTab(this, 'created')">Polls you created</div>
+            <div class="tab" onclick="switchTab(this, 'voted')">Polls you voted in</div>
         </div>
 
+        <div id="created" class="poll-grid">
+            <% polls.forEach(function(poll) { %>
+                <div class="poll-card">
+                    <h3><%= poll.title %></h3>
+                    <p><%= poll.description %></p>
+                    <button onclick="window.location.href='/<%= username %>/<%= poll._id %>/viewPoll'" class="btn btn-primary">View Your Poll</button>
+                </div>
+            <% }); %>
+        </div>
 
-    </div>
+        <div id="voted" class="poll-grid" style="display: none;">
+            <% userVotedPolls.forEach(function(poll) { %>
+                <div class="poll-card">
+                    <h3><%= poll.title %></h3>
+                    <p><%= poll.description %></p>
+                    <button onclick="window.location.href='/<%= username %>/<%= poll._id %>/viewPoll'" class="btn btn-primary">View Poll</button>
+                </div>
+            <% }); %>
+        </div>
+    </main>
 
+    <script src="/js/account.js"></script>
 
-<%- include("footer") -%>
-
-<style>
-
-    .polls-container{
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-        margin-top: 3rem;
-        text-align: center;
-    }
-
-    .pollsCreated, .votedPolls{
-        width: 50%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-    }
-
-    .pollCreated, .votedPoll{
-        width: 80%;
-        margin: auto;
-        margin-top: 2rem;
-        text-align: center;
-    }
-
-
-    .account-header{
-        font-size: 2.5rem;
-        margin-bottom: 2rem;
-    }
-    .account-info p{
-        font-size: 1.2rem;
-        margin-bottom: 1rem;
-    }
-    .account-subheader{
-        font-size: 1.8rem;
-        margin-bottom: 1rem;
-        text-align: center;
-    }
-    .polls-subheader{
-        font-size: 1.8rem;
-        margin-bottom: 1rem;
-        text-align: center;
-    }
-
-</style>
+</body>
+</html>

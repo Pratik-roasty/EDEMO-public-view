@@ -1,124 +1,169 @@
-<%- include("header") -%>
-<h3><%=pollTitle%></h3>
-<table  style="width: 30rem;">
-    <tr>
-        <th>Candidate Name</th>
-        <th>Votes</th>
-        <th>Vote</th>
-    </tr>
-    <%for(var i=0;i<candidates.length;i++){ %>
-    <tr>
-        <td><%=candidates[i]%></td>
-        <td><%=votes[i]%></td>
-        <td>
-            <form action="/<%=username%>/<%=pollid%>/vote" method="post">
-                <input type="hidden" name="candidate" value="<%=i%>">
-                <button class="voteBtn" type="submit">Vote for <%=candidates[i]%></button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDEMO | View Poll & End Election</title>
+    <link rel="stylesheet" href="/css/viewPoll.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">EDEMO</div>
+        <nav>
+            <div class="nav-item" onclick="window.location.href='/<%= username %>'">Dashboard</div>
+        </nav>
+        <div style="margin-top:auto; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.1)">
+            <strong><%= name %></strong>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header-row">
+            <h1>Poll View: University Election</h1>
+            <button id="endBtn" class="btn btn-danger" onclick="openEndPollPopup()">End Poll</button>
+            <h4>By: <%=publisher%> </h4>
+        </div>
+
+        <div>
+            <h3 style="display: none;">Winner: <%=winner%></h3>
+            <p style="display: none;"><%=endReason%></p><br>
+        </div>
+
+        <div class="card">
+            <table class="poll-table">
+                <thead>
+                    <tr>
+                        <th>Candidate Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%for(var i=0;i<candidates.length;i++){ %>
+                    <tr>
+                        <td><button onclick="window.location.href='/<%=username%>/profile/<%=userCandidates[i]%>'" class="btn btn-outline" style="border-style: none;"><%=candidates[i]%></button></td>
+                        <td>
+                            <form action="/<%=username%>/<%=pollid%>/vote" method="post">
+                                <input type="hidden" name="candidate" value="<%=i%>">
+                                <button class="btn btn-primary voteBtn" style="font-size: 0.8rem; border-style: none;">Vote for <%=candidates[i]%></button>
+                            </form>
+                        </td>
+                    </tr>
+                    <%}%>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="endPollPopup" class="modal-overlay">
+        <div class="modal-form">
+            <h2 style="margin-top: 0;">End This Election</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Please provide confirmation to finalize results.</p>
+
+            <form action="/<%=username%>/<%=pollid%>/endPoll" method="post">
+
+            
+                <div class="form-group">
+                    <label>Poll ID</label>
+                    <input type="text" id="pollIdInput" name="pollPass" placeholder="Enter Poll ID (e.g. UNI-2026)" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Reason for ending poll</label>
+                    <textarea id="endReasonInput" name="reason" rows="3" placeholder="Explain why the poll is ending early or on time..." required></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-danger" onclick="submitEndPoll()">End Poll</button>
+                    <button class="btn btn-outline" onclick="closeEndPollPopup()">Cancel</button>
+                </div>
             </form>
-        </td>
-    </tr>
-    <%}%>
-
-    <button class="btn btn-danger" style="display: none;" id="endBtn">End Poll</button>
-
-    <h3 style="display: none;">Winner: <%=winner%></h3>
-    <p style="display: none;">Reason to end poll: <%=endReason%></p>
-
-    <div id="popupForm" class="form-popup">
-    <form class="form-container" action="/<%=username%>/<%=pollid%>/endPoll" method="post">
-        <h3>Confirm End Poll</h3>
-
-        <input class="reason" type="text" placeholder="Reason for ending poll" name="reason" required><br>
-
-        <button class="form-button btn btn-success" type="submit">Submit</button>
-        <button class="form-button btn btn-danger" onclick="closeForm()">Close</button>
-    </form>
+        </div>
     </div>
 
     <script>
-        //Function to display message as alert if there is any message to be displayed.
-        const message="<%=message%>";
-        if(message){
-            alert(message);
+        if("<%=message%>"){
+            alert("<%=message%>");
         }
 
-        //end poll message alert
-        const messageEndpoll="<%=messageEndpoll%>";
-        if(messageEndpoll){
-            if(messageEndpoll==="End"){
-                alert("Poll ended successfully");
-            } else{
-                alert(messageEndpoll);
-            }
+        if("<%=messageEndpoll%>" === "End"){
+            alert("Poll ended successfully");
+        }
+        else if("<%=messageEndpoll%>"){
+            alert("<%=messageEndpoll%>");
         }
 
-        //function to restrict the end poll button to be visible only to the publisher of the poll.
+        
+
+        // disable the end poll button for users other than the publisher of the poll.
         const username="<%=username%>";
         const publisher="<%=publisher%>";
-        if(username===publisher){
-            document.querySelector("#endBtn").style.display="block";
+        if(username!==publisher){
+            document.querySelector("#endBtn").style.display="none";
         }
 
 
-        function showForm() {
-            document.getElementById("popupForm").style.display = "block";
-        }
-        function closeForm() {
-            document.getElementById("popupForm").style.display = "none";
-        }
-        //when the end poll button is clicked, the popup form will be displayed to the user to enter the reason for ending the poll. 
-        document.querySelector("#endBtn").addEventListener("click", showForm);
-        
-        //if poll is not active then hide the end poll button, disable the vote buttons, and display the reason for ending the poll and the winner of the poll.
         const isActive="<%=isActive%>";
         if(isActive==="false"){
             document.querySelector("#endBtn").style.display="none";
             const voteButtons=document.querySelectorAll(".voteBtn");
             voteButtons.forEach(function(button){
                 button.disabled=true;
+                button.style.display="none";
             });
             document.querySelector("h3").style.display="block";
             document.querySelector("p").style.display="block";
         }
 
+        const popup = document.getElementById('endPollPopup');
+
+        // Functions to control the popup
+        function openEndPollPopup() {
+            popup.style.display = 'flex';
+        }
+
+        function closeEndPollPopup() {
+            popup.style.display = 'none';
+        }
+
+        function submitEndPoll() {
+            const id = document.getElementById('pollIdInput').value;
+            const reason = document.getElementById('endReasonInput').value;
+
+            if (!id || !reason) {
+                alert("Please fill in both the Poll ID and the Reason.");
+                return;
+            }
+
+            // Logic after ending poll
+            alert(`Poll ${id} has been ended.\nReason: ${reason}`);
+            closeEndPollPopup();
+        }
+
+        // Close popup if clicking on the dim background
+        window.onclick = function(event) {
+            if (event.target == popup) {
+                closeEndPollPopup();
+            }
+        }
+
+        //if the poll is ended, show vote counts for each candidate in the table.
+        const isActive2="<%=isActive%>";
+        if(isActive2==="false"){
+            const voteCounts=<%=JSON.stringify(votes)%>;
+            const tableBody=document.querySelector(".poll-table tbody");
+            for(let i=0;i<tableBody.rows.length;i++){
+                const countCell=document.createElement("td");
+                countCell.textContent=voteCounts[i] + " votes";
+                tableBody.rows[i].appendChild(countCell);
+            }
+            //add header for the new column
+            const headerRow=document.querySelector(".poll-table thead tr");
+            const newHeader=document.createElement("th");
+            newHeader.textContent="Votes Received";
+            headerRow.appendChild(newHeader);
+        }
+
     </script>
-    <style>
-        .form-popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 2px solid #3590c4;
-            z-index: 1000;
-            background-color: white;
-            padding-top: 5%;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            height: 30rem;
-            width: 70rem;
-            text-align: center;
-        }
-
-        .form-container input {
-            display: block;
-        }
-
-        .reason {
-            width: 40rem;
-            height: 10rem;
-            text-align: center;
-            resize: none;
-            margin-top: 2rem;
-            margin-bottom: 2rem;
-        }
-        .form-button{
-            width: 8rem;
-            margin: 1rem;
-        }
-
-
-    </style>
-
-</table>
-<%-include("footer")-%>
+</body>
+</html>

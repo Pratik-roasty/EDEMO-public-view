@@ -1,34 +1,122 @@
-<%- include("header") -%>
-<h2><%=title%></h2>
-<% for(var i=0;i<nameList.length;i++){ %>
-    <h4><%=nameList[i]%></h4>
-<%}%>
-<form action="/<%=username%>/<%=pollid%>/candidates" method="post">
-    <input type="text" name="candidate" placeholder="Candidate username">
-    <button type="submit">+</button>
-</form>
-<form action="/<%=username%>/<%=pollid%>/viewPoll" method="get">
-    <button id="done" type="submit">Done</button>
-</form>
-<form action="/<%=username%>/<%=pollid%>/delete" method="get">
-    <button type="submit"> Cancel </button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDEMO | Finalize Ballot</title>
+    <link rel="stylesheet" href="/css/candidates.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">EDEMO</div>
+        <nav>
+            <div class="nav-item">Dashboard</div>
+            <div class="nav-item active">Create Poll</div>
+            <div class="nav-item">Active Polls</div>
+            <div class="nav-item">Closed Polls</div>
+        </nav>
+        <div class="user-section">
+            <div style="font-weight:700">Pratik Yadav</div>
+            <div style="font-size: 0.8rem; color: #94a3b8;">Administrator</div>
+        </div>
+    </aside>
 
-<script>
-    const message="<%=message%>";
-    console.log(message);
-    if(message!="OK" && message!=null){
-        alert(message);
-    }
+    <main class="main-content">
+        <div class="container">
+            <div id="notification" style="display: none;"></div>
+            <h1>Add Candidates</h1>
+            <p class="poll-context">Finalizing ballot for: <strong>Poll for union</strong></p>
 
-    document.addEventListener("DOMContentLoaded", () => {
-    const done = document.getElementById("done");
-    const nameList = <%- JSON.stringify(nameList) %>;
+            <div class="card">
+                <label style="display:block; margin-bottom: 8px; font-weight:600; font-size: 0.9rem;">Candidate Username</label>
+                <div class="input-group">
+                    <input type="text" id="candName" placeholder="Enter member username..." onkeypress="handleKey(event)">
+                    <button class="btn btn-primary" onclick="addCandidate()">Add to Ballot</button>
+                </div>
 
-        if (nameList.length === 0) {
-            done.disabled = true;
+                <div class="candidate-list" id="ballot">
+                    <!-- Dynamic Candidate Tags appear here -->
+                </div>
+
+                <div class="button-bar">
+                    <button class="btn btn-primary" onclick="publishPoll()">Publish Election</button>
+                    <button class="btn btn-outline" onclick="window.history.back()">Back</button>
+                </div>
+            </div>
+
+            <div class="footer-cta">
+                <p style="color: var(--text-muted); font-weight: 600;">Get the mobile app now</p>
+                <div class="app-buttons">
+                    <a href="#" class="app-btn"><span></span> App Store</a>
+                    <a href="#" class="app-btn"><span>▶</span> Play Store</a>
+                </div>
+                <p style="margin-top: 2rem; font-size: 0.8rem; color: #94a3b8;">© Pratik Yadav 2026</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function addCandidate() {
+            const input = document.getElementById('candName');
+            const ballot = document.getElementById('ballot');
+            const name = input.value.trim();
+
+            if (name === "") return;
+
+            const tag = document.createElement('div');
+            tag.className = 'candidate-tag';
+            tag.innerHTML = `
+                <span>${name}</span>
+                <span class="remove-btn" onclick="this.parentElement.remove()">×</span>
+            `;
+
+            ballot.appendChild(tag);
+            input.value = "";
+            input.focus();
         }
-    });
 
-</script>
-<%- include("footer") -%>
+        function handleKey(e) {
+            if (e.key === 'Enter') addCandidate();
+        }
+
+        function publishPoll() {
+            const count = document.querySelectorAll('.candidate-tag').length;
+            if (count < 2) {
+                alert("Please add at least 2 candidates to host a valid election.");
+            } else {
+                //send all the added usernames as a post request to the server on route: /username/poll/candidates
+                const candidates = Array.from(document.querySelectorAll('.candidate-tag span:not(.remove-btn)')).map(span => span.textContent);
+                
+                //send candidates array to server using post request
+                fetch('/<%= username %>/<%= pollid %>/candidates', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ candidates })
+                })
+                .then(res => res.json())
+                .then(data => {
+
+                     //sending message as alert to the user if there is any message to be displayed.
+                    const notification = document.getElementById("notification");
+
+                    notification.innerText = data.message;
+
+                    notification.style.display = "block";
+                    notification.style.backgroundColor = "#4CAF50";
+                    notification.style.color = "white";
+                    notification.style.padding = "12px";
+                    notification.style.margin = "10px";
+                    notification.style.borderRadius = "5px";
+
+                    // auto redirect after 4 seconds
+                    setTimeout(() => {
+                        window.location.href = data.redirect;;
+                    }, 2000);
+                });              
+            }
+        }
+    </script>
+</body>
+</html>
