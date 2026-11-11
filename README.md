@@ -1,4 +1,4 @@
-- The application is deployed on: http://edemo.ap-south-1.elasticbeanstalk.com
+- The application was deployed on: http://edemo.ap-south-1.elasticbeanstalk.com, currently deployed at https://edemo-1dwr.onrender.com/
 - Attached the screenshot of the pipeline that takes care of automating the deployment process. Though the process is automated, it will require manual approval by admin to commit the latest updates to the AWS resources.
 <img width="1884" height="635" alt="image" src="https://github.com/user-attachments/assets/1d4aef3d-845d-40b1-8d56-5f41286bf1d7" />
 
